@@ -19,6 +19,38 @@ class image_dehazer():
         self._WFun = []
 
 
+    def __AirlightEstimation(self, HazeImg):
+        if (len(HazeImg.shape) == 3):
+            for ch in range(len(HazeImg.shape)):
+                kernel = np.ones((self.airlightEstimation_windowSze, self.airlightEstimation_windowSze), np.uint8)
+                minImg = cv2.erode(HazeImg[:, :, ch], kernel)
+                self._A.append(int(minImg.max()))
+        else:
+            kernel = np.ones((self.airlightEstimation_windowSze, self.airlightEstimation_windowSze), np.uint8)
+            minImg = cv2.erode(HazeImg, kernel)
+            self._A.append(int(minImg.max()))
+
+    def __BoundCon(self, HazeImg):
+        if (len(HazeImg.shape) == 3):
+
+            t_b = np.maximum((self._A[0] - HazeImg[:, :, 0].astype(float)) / (self._A[0] - self.C0),
+                             (HazeImg[:, :, 0].astype(float) - self._A[0]) / (self.C1 - self._A[0]))
+            t_g = np.maximum((self._A[1] - HazeImg[:, :, 1].astype(float)) / (self._A[1] - self.C0),
+                             (HazeImg[:, :, 1].astype(float) - self._A[1]) / (self.C1 - self._A[1]))
+            t_r = np.maximum((self._A[2] - HazeImg[:, :, 2].astype(float)) / (self._A[2] - self.C0),
+                             (HazeImg[:, :, 2].astype(float) - self._A[2]) / (self.C1 - self._A[2]))
+
+            MaxVal = np.maximum(t_b, t_g, t_r)
+            self._Transmission = np.minimum(MaxVal, 1)
+        else:
+            self._Transmission = np.maximum((self._A[0] - HazeImg.astype(float)) / (self._A[0] - self.C0),
+                                            (HazeImg.astype(float) - self._A[0]) / (self.C1 - self._A[0]))
+            self._Transmission = np.minimum(self._Transmission, 1)
+
+        kernel = np.ones((self.boundaryConstraint_windowSze, self.boundaryConstraint_windowSze), float)
+        self._Transmission = cv2.morphologyEx(self._Transmission, cv2.MORPH_CLOSE, kernel=kernel)
+        
+
     def __LoadFilterBank(self):
         KirschFilters = []
         KirschFilters.append(np.array([[-3, -3, -3], [-3, 0, 5], [-3, 5, 5]]))
