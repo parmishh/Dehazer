@@ -1,8 +1,10 @@
 import streamlit as st
 from PIL import Image
 from io import BytesIO
-from Dehaze_module import remove_haze
 import numpy as np
+import sys
+sys.path.append('../Dehazer')
+from  Dehaze_module import remove_haze
 
 st.set_page_config(layout="wide", page_title="Image Haze Remover")
 
