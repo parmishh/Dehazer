@@ -1,0 +1,7 @@
+streamlit
+Pillow
+opencv-python 
+numpy
+temp
+moviepy
+rembg
