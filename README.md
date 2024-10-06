@@ -24,10 +24,10 @@ With the advancement in Image Processing Algorithms and Technology. We now have 
 
 ## How to use and Contribute
 
-`fork the repository`
+`Clone the repository`
 
 ```
-git clone https://github.com/{your github username here}/Dehazer
+git clone https://github.com/parmishh/Dehazer
 ```
 
 `cd Dehazer`
